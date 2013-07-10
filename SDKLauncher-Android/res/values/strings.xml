@@ -29,5 +29,9 @@
     <string name="page_x_of_y">Page %1$d of %2$d</string>
     <string name="spine_items">Spine Items</string>
     <string name="table_of_contents">Table of Contents</string>
+    <string name="title_activity_web_view">WebViewActivity</string>
+    <string name="add_bookmark">Add bookmark</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
 
 </resources>

@@ -27,7 +27,7 @@ public class BookmarksActivity extends Activity {
         if (intent.getFlags() == Intent.FLAG_ACTIVITY_NEW_TASK) {
             Bundle extras = intent.getExtras();
             if (extras != null) {
-                String value = extras.getString("bookname");
+                String value = extras.getString(Constants.BOOK_NAME);
                 back.setText(value);
             }
         }

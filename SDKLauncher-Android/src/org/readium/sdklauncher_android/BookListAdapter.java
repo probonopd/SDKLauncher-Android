@@ -1,5 +1,7 @@
 package org.readium.sdklauncher_android;
-import java.util.ArrayList;
+
+import java.util.List;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,30 +10,46 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 public class BookListAdapter extends BaseAdapter {
-	private ArrayList<String> mData;
-	private Context context;
-	public BookListAdapter(Context context,ArrayList<String> list) {
+	
+	private final List<String> mData;
+	private final Context context;
+	private final BookItemEnabler enabler;
+	
+	public interface BookItemEnabler {
+		boolean isEnabled(int position);
+	}
+	
+	public BookListAdapter(Context context, List<String> list) {
+		this(context, list, null);
+	}
+	
+	public BookListAdapter(Context context, List<String> list, BookItemEnabler enabler) {
 		this.mData = list;
 		this.context = context;
+		this.enabler = (enabler != null) ? enabler : new BookItemEnabler() {
+			
+			@Override
+			public boolean isEnabled(int position) {
+				return true;
+			}
+		};
 	}
 
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
 		return mData.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		// TODO Auto-generated method stub
 		return mData.get(position);
 	}
 
 	@Override
 	public long getItemId(int position) {
-		// TODO Auto-generated method stub
 		return position;
 	}
+	
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder = null;
 		if (convertView == null) {
@@ -49,6 +67,7 @@ public class BookListAdapter extends BaseAdapter {
 //				"img"));
 //		holder.title.setText((String) mData.get(position).get("title"));
 		holder.info.setText(mData.get(position));
+		holder.info.setEnabled(enabler.isEnabled(position));
 		return convertView;
 	}
 	
