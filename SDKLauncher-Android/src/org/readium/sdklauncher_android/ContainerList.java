@@ -79,18 +79,20 @@ public class ContainerList extends Activity {
         File sdcard = Environment.getExternalStorageDirectory();
         File epubpath = new File(sdcard, "epubtest");
         epubpath.mkdirs();
-        for (File f : epubpath.listFiles()) {
-            if (f.isFile()) {
-                String name = f.getName();
-                if (name.length() > 5
-                        && name.substring(name.length() - 5).equals(".epub")) {
-
-                    list.add(name);
-                    Log.i("books", name);
-                }
-            }
+        File[] files = epubpath.listFiles();
+		if (files != null) {
+	        for (File f : files) {
+	            if (f.isFile()) {
+	                String name = f.getName();
+	                if (name.length() > 5
+	                        && name.substring(name.length() - 5).equals(".epub")) {
+	
+	                    list.add(name);
+	                    Log.i("books", name);
+	                }
+	            }
+	        }
         }
-
         return list;
     }
 
