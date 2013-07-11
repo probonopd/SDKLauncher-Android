@@ -36,6 +36,7 @@ public class Package {
 	private String source;
 	private String authors;
 	private String modificationDate;
+	private String pageProgressionDirection;
 	private List<String> authorList;
 	private List<String> subjects;
 	private List<SpineItem> spineItems;
@@ -71,6 +72,7 @@ public class Package {
 		source = nativeGetSource(nativePtr);
 		authors = nativeGetAuthors(nativePtr);
 		modificationDate = nativeGetModificationDate(nativePtr);
+		pageProgressionDirection = nativeGetPageProgressionDirection(nativePtr);
 		authorList = nativeGetAuthorList(nativePtr);
 		subjects = nativeGetSubjects(nativePtr);
 		spineItems = nativeGetSpineItems(nativePtr);
@@ -100,6 +102,7 @@ public class Package {
 		Log.i(TAG, "authors: "+authors);
 		Log.i(TAG, "authorList: "+authorList);
 		Log.i(TAG, "modificationDate: "+modificationDate);
+		Log.i(TAG, "pageProgressionDirection: "+pageProgressionDirection);
 		Log.i(TAG, "subjects: "+subjects);
 		Log.i(TAG, "spineItems: "+spineItems.size());
 		Log.i(TAG, "tableOfContents: "+tableOfContents);
@@ -193,6 +196,10 @@ public class Package {
 		return modificationDate;
 	}
 
+	public String getPageProgressionDirection() {
+		return pageProgressionDirection;
+	}
+
 	public List<String> getSubjects() {
 		return subjects;
 	}
@@ -237,11 +244,14 @@ public class Package {
 		try {
 			o.put("rootUrl", basePath);
 			o.put("rendition_layout", nativeGetProperty(nativePtr, "layout", "rendition"));
-			JSONArray spine = new JSONArray();
+			JSONArray spineArray = new JSONArray();
 			for (SpineItem item : spineItems) {
-				spine.put(item.toJSON());
+				spineArray.put(item.toJSON());
 			}
-			o.put("spine", new JSONObject().put("items", spine));
+			JSONObject spine = new JSONObject();
+			spine.put("items", spineArray);
+			spine.put("direction", pageProgressionDirection);
+			o.put("spine", spine);
 //			Log.i(TAG, "JSON: " + o.toString(2));
 		} catch (JSONException e) {
 			Log.e(TAG, "" + e.getMessage(), e);
@@ -271,6 +281,7 @@ public class Package {
 	private native String nativeGetSource(int nativePtr);
 	private native String nativeGetAuthors(int nativePtr);
 	private native String nativeGetModificationDate(int nativePtr);
+	private native String nativeGetPageProgressionDirection(int nativePtr);
 	private native List<String> nativeGetAuthorList(int nativePtr);
 	private native List<String> nativeGetSubjects(int nativePtr);
 	private native List<SpineItem> nativeGetSpineItems(int nativePtr);

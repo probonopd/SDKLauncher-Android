@@ -1,20 +1,33 @@
 package org.readium.sdklauncher_android;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONException;
+import org.readium.sdklauncher_android.model.Bookmark;
+import org.readium.sdklauncher_android.model.BookmarkDatabase;
+import org.readium.sdklauncher_android.model.OpenPageRequest;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import com.readium.model.epub3.Container;
 
 public class BookmarksActivity extends Activity {
-    private Context context;
+	
+    protected static final String TAG = "BookmarksActivity";
+	private Context context;
     private Button back;
+	private Container container;
+	private int containerId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,35 +41,57 @@ public class BookmarksActivity extends Activity {
             Bundle extras = intent.getExtras();
             if (extras != null) {
                 String value = extras.getString(Constants.BOOK_NAME);
+                containerId = extras.getInt(Constants.CONTAINER_ID);
+                container = ContainerHolder.getInstance().get(containerId);
                 back.setText(value);
             }
         }
 
-        // TODO:......
         final ListView itmes = (ListView) findViewById(R.id.bookmarks);
 
-        // TODO:Add itmes to array.....
-        String[] metadata_values = new String[] { "bookmark 1", "bookmark 2" };
-
-        this.setListViewContent(itmes, metadata_values);
+        this.setListViewContent(itmes, BookmarkDatabase.getInstance().getBookmarks(container.getName()));
 
         initListener();
     }
 
-    private void setListViewContent(ListView view, String[] stringArray) {
-        final ArrayList<String> list = new ArrayList<String>();
-        for (int i = 0; i < stringArray.length; i++) {
-            list.add(stringArray[i]);
-        }
-        BookListAdapter bookListAdapter = new BookListAdapter(this, list);
-        view.setAdapter(bookListAdapter);
-        view.setOnItemClickListener(new ListView.OnItemClickListener() {
+    private void setListViewContent(final ListView listView, final List<Bookmark> bookmarks) {
+        final BookmarkListAdapter bookListAdapter = new BookmarkListAdapter(this, bookmarks);
+        listView.setAdapter(bookListAdapter);
+        listView.setOnItemClickListener(new ListView.OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-                    long arg3) {
-                Toast.makeText(context, "this is item " + list.get(arg2),
-                        Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            	Bookmark bookmark = bookmarks.get(position);
+        		Intent intent = new Intent(context, WebViewActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        		intent.putExtra(Constants.CONTAINER_ID, containerId);
+        		OpenPageRequest openPageRequest = OpenPageRequest.fromIdrefAndCfi(bookmark.getIdref(), bookmark.getContentCfi());
+        		try {
+					intent.putExtra(Constants.OPEN_PAGE_REQUEST_DATA, openPageRequest.toJSON().toString());
+            		startActivity(intent);
+				} catch (JSONException e) {
+					Log.e(TAG, ""+e.getMessage(), e);
+				}
+            }
+        });
+        listView.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+            	new AlertDialog.Builder(context).
+            	setTitle(R.string.bookmarks).
+            	setMessage(R.string.delete_bookmark).
+            	setNegativeButton(android.R.string.cancel, null).
+            	setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						bookmarks.remove(position);
+						BookmarkDatabase.getInstance().setBookmarks(container.getName(), bookmarks);
+						bookListAdapter.notifyDataSetChanged();
+					}
+				}).show();
+        		return true;
             }
         });
     }
@@ -71,4 +106,3 @@ public class BookmarksActivity extends Activity {
         });
     }
 }
-

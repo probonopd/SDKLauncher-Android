@@ -4,9 +4,12 @@ import java.io.ByteArrayInputStream;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.readium.sdklauncher_android.model.BookmarkDatabase;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -19,6 +22,7 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
 
 import com.readium.model.epub3.Container;
 import com.readium.model.epub3.Package;
@@ -30,10 +34,9 @@ public class WebViewActivity extends Activity {
 	private static final String READER_SKELETON = "file:///android_asset/reader.html";
 	
 	private WebView webview;
+	private Container container;
 	private Package pckg;
-	private String href;
-	private String baseUrl;
-	private String idRef;
+	private String openPageRequestData;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +50,13 @@ public class WebViewActivity extends Activity {
         if (intent.getFlags() == Intent.FLAG_ACTIVITY_NEW_TASK) {
             Bundle extras = intent.getExtras();
             if (extras != null) {
-                Container container = ContainerHolder.getInstance().get(extras.getInt(Constants.CONTAINER_ID));
+                container = ContainerHolder.getInstance().get(extras.getInt(Constants.CONTAINER_ID));
                 if (container == null) {
                 	finish();
                 	return;
                 }
                 pckg = container.getDefaultPackage();
-                //TODO Merge params into a single openPageRequestData JSON (cf reader_view.js)
-                href = extras.getString(Constants.HREF);
-                idRef = extras.getString(Constants.IDREF);
-                baseUrl = extras.getString(Constants.BASE_URL, "");
+                openPageRequestData = extras.getString(Constants.OPEN_PAGE_REQUEST_DATA);
             }
         }
 
@@ -84,10 +84,10 @@ public class WebViewActivity extends Activity {
 	}
 	
 	public void onClick(View v) {
-		if (v.getId() == R.id.previous) {
-			openPagePrevious();
-		} else if (v.getId() == R.id.next) {
-			openPageNext();
+		if (v.getId() == R.id.left) {
+			openPageLeft();
+		} else if (v.getId() == R.id.right) {
+			openPageRight();
 		}
 	}
 	
@@ -95,15 +95,16 @@ public class WebViewActivity extends Activity {
 		loadJS("window.LauncherUI.getBookmarkData(ReadiumSDK.reader.bookmarkCurrentPage());");
 	}
 	
-	private void openPagePrevious() {
-		loadJS("ReadiumSDK.reader.openPagePrev();");
+	private void openPageLeft() {
+		loadJS("ReadiumSDK.reader.openPageLeft();");
 	}
 	
-	private void openPageNext() {
-		loadJS("ReadiumSDK.reader.openPageNext();");
+	private void openPageRight() {
+		loadJS("ReadiumSDK.reader.openPageRight();");
 	}
 	
 	private void openBook(String packageData, String openPageRequest) {
+		Log.i(TAG, "packageData: "+packageData);
 		loadJSOnReady("ReadiumSDK.reader.openBook("+packageData+", "+openPageRequest+");");
 	}
 	
@@ -144,17 +145,7 @@ public class WebViewActivity extends Activity {
         public void onPageFinished(WebView view, String url) {
         	Log.i(TAG, "onPageFinished: "+url);
         	if (url.equals(READER_SKELETON)) {
-        		JSONObject openPageRequest = new JSONObject();
-        		try {
-	        		if (idRef != null) {
-	        			openPageRequest.put("idref", idRef).put("spineItemPageIndex", 0);
-	        		} else if (href != null) {
-	        			openPageRequest.put("contentRefUrl", href).put("sourceFileHref", baseUrl);
-	        		}
-        		} catch (JSONException e) {
-        			Log.e(TAG, ""+e.getMessage(), e);
-        		}
-        		openBook(pckg.toJSON(), openPageRequest.toString());
+        		openBook(pckg.toJSON(), openPageRequestData);
         	}
         }
         
@@ -188,8 +179,32 @@ public class WebViewActivity extends Activity {
 		}
 		
 		@JavascriptInterface
-		public void getBookmarkData(String bookmarkData) {
+		public void getBookmarkData(final String bookmarkData) {
 			Log.i(TAG, "bookmarkData: "+bookmarkData);
+			AlertDialog.Builder builder = new AlertDialog.Builder(WebViewActivity.this).
+					setTitle(R.string.add_bookmark);
+	        
+	        final EditText editText = new EditText(WebViewActivity.this);
+	        editText.setId(android.R.id.edit);
+	        builder.setView(editText);
+	        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if (which == DialogInterface.BUTTON_POSITIVE) {
+						String title = editText.getText().toString();
+						try {
+							JSONObject bookmarkJson = new JSONObject(bookmarkData);
+							BookmarkDatabase.getInstance().addBookmark(container.getName(), title,
+									bookmarkJson.getString("idref"), bookmarkJson.getString("contentCFI"));
+						} catch (JSONException e) {
+							Log.e(TAG, ""+e.getMessage(), e);
+						}
+					}
+				}
+			});
+	        builder.setNegativeButton(android.R.string.cancel, null);
+	        builder.show();
 		}
 	}
 

@@ -1,5 +1,6 @@
 package com.readium.model.epub3;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class Container {
     private static final String TAG = "Container";
 	private final int nativePtr;
     private final String path;
+    private String version;
     private final List<Package> packages;
 
     public Container(int nativePtr, String path) {
@@ -44,9 +46,15 @@ public class Container {
         return packages.isEmpty() ? null : packages.get(0);
     }
 
-    private String version;
-
     public String getVersion() {
     	return version;
     }
+
+	public String getPath() {
+		return path;
+	}
+
+	public String getName() {
+		return new File(path).getName();
+	}
 }

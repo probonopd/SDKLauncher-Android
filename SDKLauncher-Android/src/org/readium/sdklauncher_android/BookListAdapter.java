@@ -13,26 +13,10 @@ public class BookListAdapter extends BaseAdapter {
 	
 	private final List<String> mData;
 	private final Context context;
-	private final BookItemEnabler enabler;
-	
-	public interface BookItemEnabler {
-		boolean isEnabled(int position);
-	}
 	
 	public BookListAdapter(Context context, List<String> list) {
-		this(context, list, null);
-	}
-	
-	public BookListAdapter(Context context, List<String> list, BookItemEnabler enabler) {
 		this.mData = list;
 		this.context = context;
-		this.enabler = (enabler != null) ? enabler : new BookItemEnabler() {
-			
-			@Override
-			public boolean isEnabled(int position) {
-				return true;
-			}
-		};
 	}
 
 	@Override
@@ -55,25 +39,17 @@ public class BookListAdapter extends BaseAdapter {
 		if (convertView == null) {
 			holder = new ViewHolder();
 			convertView = LayoutInflater.from(context).inflate(
-					R.layout.book_item, null);
-//			holder.img = (ImageView) convertView.findViewById(R.id.afd_img);
-//			holder.title = (TextView) convertView.findViewById(R.id.afd_title);
-			holder.info = (TextView) convertView.findViewById(R.id.bookname_item);
+					android.R.layout.simple_list_item_1, null);
+			holder.text = (TextView) convertView.findViewById(android.R.id.text1);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-//		holder.img.setBackgroundResource((Integer) mData.get(position).get(
-//				"img"));
-//		holder.title.setText((String) mData.get(position).get("title"));
-		holder.info.setText(mData.get(position));
-		holder.info.setEnabled(enabler.isEnabled(position));
+		holder.text.setText(mData.get(position));
 		return convertView;
 	}
 	
 	public final class ViewHolder {
-//		public ImageView img;
-//		public TextView title;
-		public TextView info;
+		public TextView text;
 	}
 }

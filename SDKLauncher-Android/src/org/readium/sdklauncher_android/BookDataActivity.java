@@ -2,7 +2,7 @@ package org.readium.sdklauncher_android;
 
 import java.util.Arrays;
 
-import org.readium.sdklauncher_android.BookListAdapter.BookItemEnabler;
+import org.readium.sdklauncher_android.model.BookmarkDatabase;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,7 +13,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.readium.model.epub3.Container;
 
@@ -50,19 +49,13 @@ public class BookDataActivity extends Activity {
     }
 
     private void initBookmark() {
-        int number = 0;
+        int number = BookmarkDatabase.getInstance().getBookmarks(container.getName()).size();
         final ListView bookmark = (ListView) findViewById(R.id.bookmark);
         String bookmarks = "Bookmarks(" + number + ")";
         String[] bookmark_values = new String[] { bookmarks };
 
         Class<?>[] classList = new Class<?>[] { BookmarksActivity.class };
-        this.setListViewContent(bookmark, bookmark_values, classList, new BookItemEnabler() {
-			
-			@Override
-			public boolean isEnabled(int position) {
-				return false;
-			}
-		});
+        this.setListViewContent(bookmark, bookmark_values, classList);
 	}
 
 	private void initPageList() {
@@ -80,13 +73,7 @@ public class BookDataActivity extends Activity {
         		ListOfTablesActivity.class,
         		PageListActivity.class,
         		TableOfContentsActivity.class };
-        this.setListViewContent(pageList, pageList_values, classList, new BookItemEnabler() {
-			
-			@Override
-			public boolean isEnabled(int position) {
-				return position == 4;
-			}
-		});
+        this.setListViewContent(pageList, pageList_values, classList);
 	}
 
 	private void initMetadata() {
@@ -102,23 +89,14 @@ public class BookDataActivity extends Activity {
 	}
 
 	private void setListViewContent(ListView view, String[] stringArray,final Class<?>[] classes) {
-    	setListViewContent(view, stringArray, classes, null);
-    }
-
-    private void setListViewContent(ListView view, String[] stringArray,final Class<?>[] classes, BookItemEnabler enabler) {
-        BookListAdapter bookListAdapter = new BookListAdapter(this, Arrays.asList(stringArray), enabler);
+        BookListAdapter bookListAdapter = new BookListAdapter(this, Arrays.asList(stringArray));
         view.setAdapter(bookListAdapter);
         view.setOnItemClickListener(new ListView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                     long arg3) {
-                
-                Toast.makeText(context, "this is item " + Integer.toString(arg2),
-                        Toast.LENGTH_SHORT).show();
-
-                Intent intent = new Intent(getApplicationContext(),
-                		classes[arg2]);
+                Intent intent = new Intent(context, classes[arg2]);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra(Constants.BOOK_NAME, bookname.getText());
                 intent.putExtra(Constants.CONTAINER_ID, container.getNativePtr());
@@ -126,6 +104,12 @@ public class BookDataActivity extends Activity {
                 startActivity(intent);
             }
         });
+    }
+    
+    @Override
+    protected void onResume() {
+    	super.onResume();
+        initBookmark();
     }
     
     @Override

@@ -3,10 +3,14 @@ package org.readium.sdklauncher_android;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
+import org.readium.sdklauncher_android.model.OpenPageRequest;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -19,6 +23,7 @@ import com.readium.model.epub3.SpineItem;
 
 public class SpineItemsActivity extends Activity {
 
+	protected static final String TAG = "SpineItemsActivity";
 	private Context context;
     private Button back;
 	private Package pckg;
@@ -27,7 +32,7 @@ public class SpineItemsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.spine_itmes);
+        setContentView(R.layout.spine_items);
 
         context = this;
         back = (Button) findViewById(R.id.backToBookView1);
@@ -72,9 +77,14 @@ public class SpineItemsActivity extends Activity {
         		Intent intent = new Intent(SpineItemsActivity.this, WebViewActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         		intent.putExtra(Constants.CONTAINER_ID, containerId);
-        		intent.putExtra(Constants.IDREF, spineItems.get(position).getIdRef());
-        		intent.putExtra(Constants.HREF, spineItems.get(position).getHref());
-        		startActivity(intent);
+
+        		OpenPageRequest openPageRequest = OpenPageRequest.fromIdref(spineItems.get(position).getIdRef());
+        		try {
+					intent.putExtra(Constants.OPEN_PAGE_REQUEST_DATA, openPageRequest.toJSON().toString());
+            		startActivity(intent);
+				} catch (JSONException e) {
+					Log.e(TAG, ""+e.getMessage(), e);
+				}
             }
         });
     }

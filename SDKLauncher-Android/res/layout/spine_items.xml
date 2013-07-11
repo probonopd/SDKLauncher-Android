@@ -1,7 +1,7 @@
 <LinearLayout xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="@null"
     android:orientation="vertical"
     tools:context=".MainActivity" xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -26,6 +26,7 @@
 
         <ListView
             android:id="@+id/spineItems"
+    		android:background="#ffffff"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fastScrollEnabled="true">

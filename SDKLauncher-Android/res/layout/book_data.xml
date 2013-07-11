@@ -1,7 +1,7 @@
 <LinearLayout xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="@null"
     android:orientation="vertical"
     tools:context=".MainActivity" xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -34,37 +34,40 @@
         android:background="#cccccc"
         android:orientation="vertical" >
 
-        <TextView
+        <View
             android:layout_width="match_parent"
             android:layout_height="20dip" />
 
         <ListView
             android:id="@+id/metaData"
+    		android:background="#ffffff"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </ListView>
 
-        <TextView
+        <View
             android:layout_width="match_parent"
             android:layout_height="20dip"/>
 
         <ListView
             android:id="@+id/pageList"
+    		android:background="#ffffff"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </ListView>
 
-        <TextView
+        <View
             android:layout_width="match_parent"
             android:layout_height="20dip"/>
 
         <ListView
             android:id="@+id/bookmark"
+    		android:background="#ffffff"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </ListView>
 
-        <TextView
+        <View
             android:layout_width="match_parent"
             android:layout_height="20dip" />
     </LinearLayout>

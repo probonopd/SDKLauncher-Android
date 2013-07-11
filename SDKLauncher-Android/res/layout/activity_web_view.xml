@@ -17,18 +17,18 @@
         android:id="@+id/navigation">
         
         <Button
-            android:id="@+id/previous"
+            android:id="@+id/left"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/previous"
+            android:text="@string/left"
             android:onClick="onClick" />
         <Button
-            android:id="@+id/next"
+            android:id="@+id/right"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/next"
+            android:text="@string/right"
             android:onClick="onClick" />
     </LinearLayout>
 

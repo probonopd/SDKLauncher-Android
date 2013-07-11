@@ -5,7 +5,11 @@ package org.readium.sdklauncher_android;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
+import org.readium.sdklauncher_android.model.BookmarkDatabase;
 
 import com.readium.EPubAPI;
 import com.readium.model.epub3.Container;
@@ -34,6 +38,7 @@ public class ContainerList extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.container_list);
         context = this;
+        BookmarkDatabase.initInstance(getApplicationContext());
         final ListView view = (ListView) findViewById(R.id.containerList);
 
         final List<String> list = getInnerBooks();
@@ -93,6 +98,14 @@ public class ContainerList extends Activity {
 	            }
 	        }
         }
+		Collections.sort(list, new Comparator<String>() {
+
+			@Override
+			public int compare(String s1, String s2) {
+				return s1.compareToIgnoreCase(s2);
+			}
+
+		});
         return list;
     }
 
