@@ -5,6 +5,11 @@ A small Android application to serve as a launcher/testbed for the Readium SDK.
 How to get source from github
 -------------------------------
  git clone --recursive https://github.com/readium/Launcher-Android.git
+ 
+Warning
+--------
+ There is an issue on older version of Android. The reading activity currently works for API level 11 (HoneyComb) and higher.
+ The issue happens when loading book resources on devices with API level 10 and lower. The method WebViewClient.onLoadResource(WebView view, String url) gets called when a resource is loaded. If we call WebView.loadData, the current page is discarded and a new page is loaded. The readium-shared-js files become out of scope.
 
 How to build
 ------------
