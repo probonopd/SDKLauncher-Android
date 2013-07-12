@@ -44,6 +44,10 @@ public class SpineItemsActivity extends Activity {
                 back.setText(value);
                 containerId = extras.getInt(Constants.CONTAINER_ID);
                 Container container = ContainerHolder.getInstance().get(containerId);
+                if (container == null) {
+                	finish();
+                	return;
+                }
                 pckg = container.getDefaultPackage();
             }
         }

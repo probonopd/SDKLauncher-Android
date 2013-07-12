@@ -16,7 +16,8 @@ public class Package {
 	private static final String TAG = "Package";
 	
 	private final int nativePtr;
-	
+
+	private Container container;
 	private String title;
 	private String subtitle;
 	private String shortTitle;
@@ -50,6 +51,10 @@ public class Package {
 		this.nativePtr = nativePtr;
 //        Log.i(TAG, "package nativePtr: "+nativePtr);
         loadData();
+	}
+
+	public void setContainer(Container container) {
+		this.container = container;
 	}
 
 	private void loadData() {
@@ -230,7 +235,7 @@ public class Package {
 
 	public byte[] getContent(String relativePath) {
 //		Log.i(TAG, "getContent-nativePtr: "+Integer.toHexString(nativePtr));
-		ByteBuffer buffer = nativeReadStreamForRelativePath(nativePtr, relativePath);
+		ByteBuffer buffer = nativeReadStreamForRelativePath(nativePtr, container.getNativePtr(), relativePath);
 		if (buffer == null) {
 			return new byte[0];
 		}
@@ -299,6 +304,7 @@ public class Package {
 	/*
 	 * Content 
 	 */
-	private native ByteBuffer nativeReadStreamForRelativePath(int nativePtr, String relativePath);
+	private native ByteBuffer nativeReadStreamForRelativePath(int nativePtr, 
+			int containerPtr, String relativePath);
 
 }

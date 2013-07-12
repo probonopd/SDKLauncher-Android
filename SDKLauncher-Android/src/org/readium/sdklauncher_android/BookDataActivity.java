@@ -38,6 +38,10 @@ public class BookDataActivity extends Activity {
                 String value = extras.getString(Constants.BOOK_NAME);
                 bookname.setText(value);
                 container = ContainerHolder.getInstance().get(extras.getInt(Constants.CONTAINER_ID));
+                if (container == null) {
+                	finish();
+                	return;
+                }
             }
         }
 

@@ -10,7 +10,6 @@ import com.readium.model.epub3.SpineItem;
 import com.readium.model.epub3.components.navigation.NavigationElement;
 import com.readium.model.epub3.components.navigation.NavigationPoint;
 import com.readium.model.epub3.components.navigation.NavigationTable;
-import com.readium.model.epub3.util.ByteBufferUtils;
 
 /**
  * This class is a helper accessed by the native code. It centralizes all the creations of Java objects in a unique place.
@@ -75,25 +74,17 @@ public abstract class JavaObjectsFactory {
 	}
 	
 	@SuppressWarnings("unused")
-	private static ByteBuffer createBuffer() {
-		//TODO Get buffer size from param... Requires ePub3::Package->InfoAtPath() method
-		ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE_INCREMENT);
+	private static ByteBuffer createBuffer(int bufferSize) {
+		ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
 		buffer.position(0);
 		buffer.limit(0);
 		return buffer;
 	}
 	
 	@SuppressWarnings("unused")
-	private static ByteBuffer appendBytesToBuffer(ByteBuffer buffer, byte[] data) {
-		// TODO This method will be simplified when createBuffer will get the real 
-		// size of the uncompressed file
+	private static void appendBytesToBuffer(ByteBuffer buffer, byte[] data) {
 		int newLimit = buffer.limit() + data.length;
-		if (buffer.capacity() < newLimit) {
-			ByteBuffer oldBuffer = buffer;
-			buffer = ByteBufferUtils.increaseCapacity(oldBuffer, BUFFER_SIZE_INCREMENT);
-		}
 		buffer.limit(newLimit);
 		buffer.put(data);
-		return buffer;
 	}
 }

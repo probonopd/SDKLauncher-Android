@@ -39,6 +39,7 @@ public class Container {
 	}
 
 	public void addPackage(Package pack) {
+		pack.setContainer(this);
 		packages.add(pack);
 	}
 
