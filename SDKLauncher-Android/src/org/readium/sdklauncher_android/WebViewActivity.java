@@ -31,8 +31,8 @@ import com.readium.model.epub3.Package;
 public class WebViewActivity extends Activity {
 
 	private static final String TAG = "WebViewActivity";
-	private static final String ASSET_PREFIX = "file:///android_asset/";
-	private static final String READER_SKELETON = "file:///android_asset/reader.html";
+	private static final String ASSET_PREFIX = "file:///android_asset/readium-shared-js/";
+	private static final String READER_SKELETON = "file:///android_asset/readium-shared-js/reader.html";
 	
 	private WebView webview;
 	private Container container;
