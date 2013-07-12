@@ -12,6 +12,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -67,7 +68,9 @@ public class WebViewActivity extends Activity {
 	@SuppressLint("SetJavaScriptEnabled")
 	private void initWebView() {
 		webview.getSettings().setJavaScriptEnabled(true);
-		webview.getSettings().setAllowUniversalAccessFromFileURLs(true);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			webview.getSettings().setAllowUniversalAccessFromFileURLs(true);
+		}
 		webview.getSettings().setLightTouchEnabled(true);
 		webview.getSettings().setPluginState(WebSettings.PluginState.ON);
 		webview.setWebViewClient(new EpubWebViewClient());
@@ -152,7 +155,18 @@ public class WebViewActivity extends Activity {
         @Override
         public void onLoadResource(WebView view, String url) {
         	Log.i(TAG, "onLoadResource: "+url);
+        	byte[] data = pckg.getContent(cleanResourceUrl(url));
+            if (data.length > 0) {
+                // TODO Pass the correct mimetype
+            	webview.loadDataWithBaseURL(url, new String(data), null, "utf-8", null);
+            }
         }
+        
+//        @Override
+//        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//        	byte[] data = pckg.getContent(cleanResourceUrl(url));
+//        	return (data.length > 0);
+//        }
 
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
@@ -186,6 +200,7 @@ public class WebViewActivity extends Activity {
 	        
 	        final EditText editText = new EditText(WebViewActivity.this);
 	        editText.setId(android.R.id.edit);
+	        editText.setHint(R.string.title);
 	        builder.setView(editText);
 	        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 				

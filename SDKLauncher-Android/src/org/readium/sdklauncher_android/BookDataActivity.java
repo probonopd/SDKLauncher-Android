@@ -51,7 +51,7 @@ public class BookDataActivity extends Activity {
     private void initBookmark() {
         int number = BookmarkDatabase.getInstance().getBookmarks(container.getName()).size();
         final ListView bookmark = (ListView) findViewById(R.id.bookmark);
-        String bookmarks = "Bookmarks(" + number + ")";
+        String bookmarks = "Bookmarks (" + number + ")";
         String[] bookmark_values = new String[] { bookmarks };
 
         Class<?>[] classList = new Class<?>[] { BookmarksActivity.class };
