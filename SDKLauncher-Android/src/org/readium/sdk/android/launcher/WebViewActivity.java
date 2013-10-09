@@ -72,7 +72,7 @@ import android.widget.VideoView;
 public class WebViewActivity extends FragmentActivity implements ViewerSettingsDialog.OnViewerSettingsChange {
 
 	private static final String TAG = "WebViewActivity";
-	private static final String ASSET_PREFIX = "file:///android_asset/readium-shared-js/";
+	public static final String ASSET_PREFIX = "file:///android_asset/readium-shared-js/";
 	private static final String READER_SKELETON = "file:///android_asset/readium-shared-js/reader.html";
 	
 	private WebView mWebview;
@@ -264,8 +264,9 @@ public class WebViewActivity extends FragmentActivity implements ViewerSettingsD
 					binary = new byte[data.available()];
 	            	data.read(binary);
 	            	data.close();
-		            data = new ByteArrayInputStream(HTMLUtil.htmlByReplacingMediaURLsInHTML(new String(binary), 
-		            		cleanedUrl, "PackageUUID").getBytes());
+                    String insertMathScripts = HTMLUtil.insertMathJaxScripts(new String(binary));
+                    data = new ByteArrayInputStream(HTMLUtil.htmlByReplacingMediaURLsInHTML(insertMathScripts,
+                            cleanedUrl, "PackageUUID").getBytes());
 				} catch (IOException e) {
 					Log.e(TAG, ""+e.getMessage(), e);
 				}

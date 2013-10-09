@@ -24,6 +24,8 @@ package org.readium.sdk.android.launcher.util;
 import java.io.File;
 import java.text.MessageFormat;
 
+import org.readium.sdk.android.launcher.WebViewActivity;
+
 import android.net.Uri;
 
 /**
@@ -34,6 +36,42 @@ import android.net.Uri;
  */
 public class HTMLUtil {
 
+    private static final String MATH_JAX_SCRIPTS = "<script src='"+WebViewActivity.ASSET_PREFIX+"mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML' type='text/javascript'></script>"+
+            "<script type='text/x-mathjax-config'>"+
+            "MathJax.Hub.Config({"+
+            "showMathMenu: false,"+
+            "jax: ['input/MathML','output/HTML-CSS'],"+
+            "extensions: ['mml2jax.js', 'tex2jax.js'],"+
+            "TeX: { extensions: ['noErrors.js','noUndefined.js'] },"+
+            "});"+
+            "</script>";
+    private static final String TAG = "HTMLUtil";
+
+    public static String insertMathJaxScripts(String html) {
+        if (html == null || html.length() == 0) {
+            return html;
+        }
+
+        String token = "head";
+        int i = 0;
+
+        String headEnd = "</" + token + ">";
+        StringBuilder sb = new StringBuilder();
+        int endTagLocation = html.indexOf(headEnd);
+        if (endTagLocation == -1) {
+            return html;
+        }
+        String originalFragment = html.substring(i, endTagLocation);
+
+        sb.append(originalFragment);
+        sb.append(MATH_JAX_SCRIPTS);
+        i += originalFragment.length();
+        sb.append(html.substring(i, html.length()));
+        html = sb.toString();
+
+        return html;
+    }
+    
 	public static String htmlByReplacingMediaURLsInHTML(String html,
 			String relativePath, String packageUUID) {
 		if (html == null || html.length() == 0 || relativePath == null
