@@ -264,9 +264,11 @@ public class WebViewActivity extends FragmentActivity implements ViewerSettingsD
 					binary = new byte[data.available()];
 	            	data.read(binary);
 	            	data.close();
-                    String insertMathScripts = HTMLUtil.insertMathJaxScripts(new String(binary));
-                    data = new ByteArrayInputStream(HTMLUtil.htmlByReplacingMediaURLsInHTML(insertMathScripts,
-                            cleanedUrl, "PackageUUID").getBytes());
+	            	String string = new String(binary);
+                    String insertMathScripts = HTMLUtil.insertMathJaxScripts(string);
+                    String htmlByReplacingMediaURLsInHTML = HTMLUtil.htmlByReplacingMediaURLsInHTML(insertMathScripts,
+                            cleanedUrl, "PackageUUID");
+                    data = new ByteArrayInputStream(htmlByReplacingMediaURLsInHTML.getBytes());
 				} catch (IOException e) {
 					Log.e(TAG, ""+e.getMessage(), e);
 				}

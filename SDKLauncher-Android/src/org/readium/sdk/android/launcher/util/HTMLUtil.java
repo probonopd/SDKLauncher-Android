@@ -23,6 +23,8 @@ package org.readium.sdk.android.launcher.util;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.readium.sdk.android.launcher.WebViewActivity;
 
@@ -50,6 +52,15 @@ public class HTMLUtil {
     public static String insertMathJaxScripts(String html) {
         if (html == null || html.length() == 0) {
             return html;
+        }
+        
+        // Match both <math and <m:math if a namespace is used for MathML tags
+        Pattern mathFinder = Pattern.compile("(<(?:.*:)?math)", Pattern.CASE_INSENSITIVE);
+        Matcher regexMatcher = mathFinder.matcher(html);
+        boolean foundMathTag = regexMatcher.find();
+        
+        if (!foundMathTag) {
+        	return html;
         }
 
         String token = "head";
